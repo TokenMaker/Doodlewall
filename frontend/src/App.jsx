@@ -11,7 +11,7 @@ import HelpTooltip from "./components/HelpTooltip";
 import AdminLogin from "./components/AdminLogin";
 import AdminPanel from "./components/AdminPanel";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, '');
 const API = `${BACKEND_URL}/api`;
 
 function App() {
