@@ -521,7 +521,7 @@ frontend_url = os.environ.get('FRONTEND_URL', 'https://wall-of-art.preview.emerg
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=[frontend_url, "http://localhost:3000"],
+    allow_origins=[frontend_url, "http://localhost:3000", "https://doodlewall.vercel.app"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
