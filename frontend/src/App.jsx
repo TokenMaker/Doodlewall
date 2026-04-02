@@ -43,14 +43,19 @@ function App() {
   }, []);
 
   // Fetch all doodles
-  const fetchDoodles = useCallback(async () => {
+  const fetchDoodles = useCallback(async (retryCount = 0) => {
     try {
       const response = await axios.get(`${API}/doodles`);
       setDoodles(response.data);
-    } catch (error) {
-      console.error("Failed to fetch doodles:", error);
-    } finally {
       setIsLoading(false);
+    } catch (error) {
+      console.error(`Failed to fetch doodles (attempt ${retryCount + 1}):`, error);
+      if (retryCount < 10) {
+        // Retry every 3 seconds while Render backend wakes up
+        setTimeout(() => fetchDoodles(retryCount + 1), 3000);
+      } else {
+        setIsLoading(false);
+      }
     }
   }, []);
 
