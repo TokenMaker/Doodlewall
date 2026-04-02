@@ -352,7 +352,7 @@ async def root():
 
 # Auth routes
 @api_router.post("/auth/login")
-async def admin_login(input: AdminLogin, request: Request, response: Response):
+async def admin_login(input: AdminLogin, request: Request):
     email = input.email.lower().strip()
     
     # Get client IP
@@ -385,22 +385,11 @@ async def admin_login(input: AdminLogin, request: Request, response: Response):
     
     access_token = create_access_token(admin["id"], admin["email"])
     
-    # Set secure cookie (secure=True in production)
-    is_production = "preview.emergentagent.com" in os.environ.get("FRONTEND_URL", "")
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=is_production,
-        samesite="lax",
-        max_age=86400,
-        path="/"
-    )
-    
     return {
         "id": admin["id"],
         "email": admin["email"],
-        "role": admin.get("role", "admin")
+        "role": admin.get("role", "admin"),
+        "access_token": access_token
     }
 
 

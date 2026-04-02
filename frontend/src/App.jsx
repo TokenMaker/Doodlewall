@@ -29,11 +29,19 @@ function App() {
   // Check existing auth on mount
   useEffect(() => {
     const checkAuth = async () => {
+      const token = localStorage.getItem("admin_token");
+      if (!token) {
+        setCheckingAuth(false);
+        return;
+      }
       try {
-        const response = await axios.get(`${API}/auth/me`, { withCredentials: true });
+        const response = await axios.get(`${API}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         setAdmin(response.data);
       } catch (err) {
-        // Not authenticated
+        // Token expired or invalid
+        localStorage.removeItem("admin_token");
         setAdmin(null);
       } finally {
         setCheckingAuth(false);

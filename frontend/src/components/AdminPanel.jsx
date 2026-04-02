@@ -10,6 +10,10 @@ export default function AdminPanel({ admin, doodles, onLogout, onDoodlesDeleted,
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteType, setDeleteType] = useState(null); // 'selected' or 'all'
 
+  const getAuthHeaders = () => ({
+    Authorization: `Bearer ${localStorage.getItem("admin_token") || ""}`
+  });
+
   const toggleSelect = (id) => {
     const newSelected = new Set(selectedIds);
     if (newSelected.has(id)) {
@@ -38,7 +42,7 @@ export default function AdminPanel({ admin, doodles, onLogout, onDoodlesDeleted,
       await axios.post(`${API}/doodles/bulk-delete`, {
         doodle_ids: Array.from(selectedIds)
       }, {
-        withCredentials: true
+        headers: getAuthHeaders()
       });
       onDoodlesDeleted(Array.from(selectedIds));
       setSelectedIds(new Set());
@@ -61,7 +65,7 @@ export default function AdminPanel({ admin, doodles, onLogout, onDoodlesDeleted,
     
     try {
       await axios.delete(`${API}/admin/doodles/all`, {
-        withCredentials: true
+        headers: getAuthHeaders()
       });
       onDoodlesDeleted('all');
       setSelectedIds(new Set());
@@ -76,10 +80,11 @@ export default function AdminPanel({ admin, doodles, onLogout, onDoodlesDeleted,
 
   const handleLogout = async () => {
     try {
-      await axios.post(`${API}/auth/logout`, {}, { withCredentials: true });
+      await axios.post(`${API}/auth/logout`, {}, { headers: getAuthHeaders() });
     } catch (err) {
       console.error("Logout error:", err);
     }
+    localStorage.removeItem("admin_token");
     onLogout();
   };
 
