@@ -17,7 +17,7 @@ import re
 import bcrypt
 import jwt
 from datetime import datetime, timezone, timedelta
-from emergentintegrations.llm.chat import LlmChat, UserMessage, ImageContent
+from openai import AsyncOpenAI
 import hashlib
 
 # MongoDB connection
@@ -273,32 +273,42 @@ async def calculate_next_position():
 # Content moderation
 async def check_content_appropriate(image_base64: str) -> tuple[bool, str]:
     try:
-        api_key = os.environ.get('EMERGENT_LLM_KEY')
+        api_key = os.environ.get('EMERGENT_LLM_KEY', os.environ.get('OPENAI_API_KEY'))
         if not api_key:
             logger.warning("No EMERGENT_LLM_KEY found, skipping content moderation")
             return True, ""
         
         base64_data = re.sub(r'^data:image/[^;]+;base64,', '', image_base64)
+        mime_type = "image/jpeg"
+        if "data:image/" in image_base64:
+            mime_type = image_base64.split(";")[0].split(":")[1]
+            
+        client = AsyncOpenAI(api_key=api_key)
         
-        chat = LlmChat(
-            api_key=api_key,
-            session_id=f"moderation-{uuid.uuid4()}",
-            system_message="You are a content moderation assistant. Analyze images and determine if they contain inappropriate content such as: nudity, explicit sexual content, violence, gore, hate symbols, or offensive imagery. Respond ONLY with 'SAFE' if the image is appropriate, or 'UNSAFE: [brief reason]' if it contains inappropriate content."
-        ).with_model("openai", "gpt-4o-mini")
-        
-        image_content = ImageContent(image_base64=base64_data)
-        
-        user_message = UserMessage(
-            text="Analyze this doodle image for inappropriate content. Is it safe to display publicly?",
-            image_contents=[image_content]
+        response = await client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a content moderation assistant. Analyze images and determine if they contain inappropriate content such as: nudity, explicit sexual content, violence, gore, hate symbols, or offensive imagery. Respond ONLY with 'SAFE' if the image is appropriate, or 'UNSAFE: [brief reason]' if it contains inappropriate content."
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": "Analyze this doodle image for inappropriate content. Is it safe to display publicly?"},
+                        {"type": "image_url", "image_url": {"url": f"data:{mime_type};base64,{base64_data}"}}
+                    ]
+                }
+            ],
+            max_tokens=100
         )
         
-        response = await chat.send_message(user_message)
+        result = response.choices[0].message.content
         
-        if response.upper().startswith("SAFE"):
+        if result.upper().startswith("SAFE"):
             return True, ""
-        elif response.upper().startswith("UNSAFE"):
-            reason = response.split(":", 1)[1].strip() if ":" in response else "Content flagged as inappropriate"
+        elif result.upper().startswith("UNSAFE"):
+            reason = result.split(":", 1)[1].strip() if ":" in result else "Content flagged as inappropriate"
             return False, reason
         else:
             return True, ""
