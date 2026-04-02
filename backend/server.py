@@ -501,7 +501,7 @@ async def delete_doodle(doodle_id: str, admin: dict = Depends(get_current_admin)
     return {"message": "Doodle deleted successfully"}
 
 
-@api_router.delete("/doodles")
+@api_router.post("/doodles/bulk-delete")
 async def delete_multiple_doodles(request: DeleteDoodlesRequest, admin: dict = Depends(get_current_admin)):
     if not request.doodle_ids:
         raise HTTPException(status_code=400, detail="No doodle IDs provided")

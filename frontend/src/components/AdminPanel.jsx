@@ -35,8 +35,9 @@ export default function AdminPanel({ admin, doodles, onLogout, onDoodlesDeleted,
     setDeleteType('selected');
     
     try {
-      await axios.delete(`${API}/doodles`, {
-        data: { doodle_ids: Array.from(selectedIds) },
+      await axios.post(`${API}/doodles/bulk-delete`, {
+        doodle_ids: Array.from(selectedIds)
+      }, {
         withCredentials: true
       });
       onDoodlesDeleted(Array.from(selectedIds));
