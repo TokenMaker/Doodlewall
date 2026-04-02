@@ -1,0 +1,87 @@
+{
+  "theme": "light",
+  "archetype": "4",
+  "archetype_name": "Swiss & High-Contrast (Neobrutalism Playful Variant)",
+  "design_philosophy": "Strictly Black & White structural UI with heavy, playful neobrutalist borders and sharp shadows. The UI must feel completely uncolored so the user-generated Doodles provide 100% of the vibrancy. Generous spacing, large chunky interactive areas, and bouncy interactions.",
+  "colors": {
+    "background": {
+      "primary": "#FFFFFF",
+      "secondary": "#FAFAFA",
+      "grid_lines": "#E5E5E5"
+    },
+    "text": {
+      "primary": "#000000",
+      "secondary": "#333333"
+    },
+    "border": {
+      "primary": "#000000"
+    },
+    "doodle_palette": [
+      { "name": "Red", "hex": "#EF4444", "tailwind": "bg-red-500" },
+      { "name": "Orange", "hex": "#F97316", "tailwind": "bg-orange-500" },
+      { "name": "Yellow", "hex": "#EAB308", "tailwind": "bg-yellow-500" },
+      { "name": "Green", "hex": "#22C55E", "tailwind": "bg-green-500" },
+      { "name": "Blue", "hex": "#3B82F6", "tailwind": "bg-blue-500" },
+      { "name": "Purple", "hex": "#A855F7", "tailwind": "bg-purple-500" },
+      { "name": "Pink", "hex": "#EC4899", "tailwind": "bg-pink-500" },
+      { "name": "Brown", "hex": "#8B4513", "tailwind": "bg-[#8B4513]" }
+    ],
+    "shadows": {
+      "neobrutalist_sm": "2px 2px 0px 0px rgba(0,0,0,1)",
+      "neobrutalist_md": "4px 4px 0px 0px rgba(0,0,0,1)",
+      "neobrutalist_lg": "8px 8px 0px 0px rgba(0,0,0,1)"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "heading": "'Fredoka', sans-serif",
+      "body": "'Nunito', sans-serif"
+    },
+    "sizing": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight",
+      "body": "text-base sm:text-lg font-medium",
+      "button": "text-lg font-bold tracking-wide uppercase"
+    }
+  },
+  "layout_and_spacing": {
+    "spacing_scale": "Use generous padding: p-4 to p-8 for containers. The wall itself is infinite.",
+    "grid_system": "The Doodle Wall uses an absolute positioned coordinate system within a pan/zoom container. Calculate random overlapping positions or a structured grid with random transforms (rotate -5deg to +5deg, translate x/y) for a messy, organic feel."
+  },
+  "components": {
+    "doodle_wall": {
+      "description": "Infinite canvas container taking up 100vw/100vh. Uses react-zoom-pan-pinch for dragging and zooming.",
+      "visuals": "Background should have a repeating CSS dot or grid pattern (black dots on white background with 10% opacity) to signify the 'wall'."
+    },
+    "add_doodle_button": {
+      "description": "Floating action button (FAB) at the bottom center or top right.",
+      "visuals": "White background, thick 3px black border, heavy black drop shadow (4px 4px 0 0 #000). Hover state: Translate up slightly and increase shadow to 6px 6px. Active state: Translate down and reduce shadow to 0px."
+    },
+    "drawing_canvas_modal": {
+      "description": "Popup containing the 350x350 canvas for drawing.",
+      "visuals": "Neobrutalist window style. White background, thick black borders. Includes an 'X' to close, the 350x350 canvas area (with a 2px dashed black border to indicate drawing area), a row of 8 color circles (the ONLY color in the UI), and a 'Put on Wall' button."
+    },
+    "doodle_item": {
+      "description": "Individual user doodle on the wall.",
+      "visuals": "Square image with a subtle white background or transparent background. On hover, apply a z-index boost and slight scale up. On click, expand to a larger view."
+    }
+  },
+  "interactions_and_motion": {
+    "hover_states": "All buttons use Neobrutalist pop: transform translate-y-[-2px] and larger black shadows.",
+    "transitions": "Bouncy spring animations (e.g., framer-motion's default spring) for modal entrance and doodle placement.",
+    "drawing": "Smooth line drawing on HTML5 Canvas using standard stroke styles with 'round' lineCap and lineJoin for a marker feel."
+  },
+  "media_and_assets": {
+    "image_urls": [],
+    "icons": "Use 'lucide-react' for basic B&W icons (Pencil, X, Plus, ZoomIn, ZoomOut, Move)."
+  },
+  "instructions_to_main_agent": [
+    "INSTALL_DEPENDENCIES: Install 'react-zoom-pan-pinch' (for the infinite panning wall) and 'framer-motion' (for playful bounce animations). Add Google Fonts 'Fredoka' and 'Nunito' to index.html.",
+    "CANVAS_IMPLEMENTATION: Use standard HTML5 `<canvas>` for the drawing board. Fix size to 350x350px. Use standard mouse/touch event listeners (onPointerDown, onPointerMove, onPointerUp) to draw. Set `ctx.lineCap` and `ctx.lineJoin` to 'round'. Brush size is fixed (e.g., 5px).",
+    "STATE_MANAGEMENT: Save the doodle as a Base64 string via `canvas.toDataURL('image/png')` to store in MongoDB.",
+    "WALL_RENDERING: Wrap the placed doodles in a `<TransformWrapper>` and `<TransformComponent>` from `react-zoom-pan-pinch` to allow infinite panning. Set the TransformComponent width/height to 100vw/100vh.",
+    "PLACEMENT_LOGIC: Assign coordinates (X, Y) to each doodle when saving, or calculate a grid position dynamically. Apply random rotation (e.g., `rotate(-4deg)` to `rotate(4deg)`) so it looks hand-placed.",
+    "STRICT_MONOCHROME_UI: No colors in buttons, backgrounds, or borders. Everything UI-related is White, Black, or transparent. The ONLY colors allowed are the 8 palette buttons and the user's drawings.",
+    "TESTING_ATTRIBUTES: Add 'data-testid' to all buttons and interactive elements (e.g., 'data-testid=\"add-doodle-button\"', 'data-testid=\"color-picker-red\"', 'data-testid=\"submit-doodle-button\"', 'data-testid=\"doodle-item\"')."
+  ]
+}

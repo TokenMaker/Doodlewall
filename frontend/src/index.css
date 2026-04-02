@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --font-heading: 'Fredoka', sans-serif;
+    --font-body: 'Nunito', sans-serif;
+    --shadow-neo-sm: 2px 2px 0px 0px rgba(0,0,0,1);
+    --shadow-neo-md: 4px 4px 0px 0px rgba(0,0,0,1);
+    --shadow-neo-lg: 8px 8px 0px 0px rgba(0,0,0,1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: #FFFFFF;
+    overflow: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+}
+
+/* Neobrutalist button styles */
+.neo-button {
+    background: #FFFFFF;
+    border: 3px solid #000000;
+    box-shadow: var(--shadow-neo-md);
+    transition: all 0.15s ease;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.neo-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+}
+
+.neo-button:active {
+    transform: translateY(2px);
+    box-shadow: 0px 0px 0px 0px rgba(0,0,0,1);
+}
+
+/* Neobrutalist card/modal styles */
+.neo-card {
+    background: #FFFFFF;
+    border: 3px solid #000000;
+    box-shadow: var(--shadow-neo-lg);
+}
+
+/* Wall background - clean white */
+.wall-pattern {
+    background-color: #FFFFFF;
+}
+
+/* Drawing canvas container */
+.canvas-container {
+    border: 2px dashed #000000;
+    background: #FFFFFF;
+}
+
+/* Color picker button */
+.color-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px solid #000000;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.color-button:hover {
+    transform: scale(1.1);
+}
+
+.color-button.selected {
+    box-shadow: 0 0 0 3px #FFFFFF, 0 0 0 6px #000000;
+    transform: scale(1.15);
+}
+
+/* Doodle item on wall */
+.doodle-item {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.doodle-item:hover {
+    z-index: 100 !important;
+    transform: scale(1.05);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #FAFAFA;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #000000;
+    border-radius: 4px;
+}
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 0 0% 0%;
+        --card: 0 0% 100%;
+        --card-foreground: 0 0% 0%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 0 0% 0%;
+        --primary: 0 0% 0%;
+        --primary-foreground: 0 0% 100%;
+        --secondary: 0 0% 96%;
+        --secondary-foreground: 0 0% 0%;
+        --muted: 0 0% 96%;
+        --muted-foreground: 0 0% 40%;
+        --accent: 0 0% 96%;
+        --accent-foreground: 0 0% 0%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 0 0% 0%;
+        --input: 0 0% 90%;
+        --ring: 0 0% 0%;
+        --radius: 0px;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+}
