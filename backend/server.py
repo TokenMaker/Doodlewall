@@ -557,9 +557,9 @@ async def startup_event():
         expireAfterSeconds=3600
     )
     
-    # Write test credentials
-    credentials_dir = Path("/app/memory")
-    credentials_dir.mkdir(exist_ok=True)
+    # Write test credentials (using relative path instead of absolute /app)
+    credentials_dir = ROOT_DIR / "memory"
+    credentials_dir.mkdir(parents=True, exist_ok=True)
     with open(credentials_dir / "test_credentials.md", "w") as f:
         f.write("# Test Credentials\n\n")
         f.write("## Admin Account\n")
