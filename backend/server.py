@@ -194,6 +194,8 @@ class Doodle(BaseModel):
     position_x: int = 0
     position_y: int = 0
     rotation: float = 0.0
+    votes_up: int = 0
+    votes_down: int = 0
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -204,7 +206,20 @@ class DoodleResponse(BaseModel):
     position_x: int
     position_y: int
     rotation: float
+    votes_up: int = 0
+    votes_down: int = 0
     created_at: str
+
+
+class VoteRequest(BaseModel):
+    vote: str  # "up" or "down"
+
+    @field_validator('vote')
+    @classmethod
+    def validate_vote(cls, v):
+        if v not in ('up', 'down'):
+            raise ValueError('vote must be "up" or "down"')
+        return v
 
 
 class AdminLogin(BaseModel):
@@ -456,6 +471,8 @@ async def get_doodles():
             position_x=d['position_x'],
             position_y=d['position_y'],
             rotation=d['rotation'],
+            votes_up=d.get('votes_up', 0),
+            votes_down=d.get('votes_down', 0),
             created_at=d['created_at'] if isinstance(d['created_at'], str) else d['created_at'].isoformat()
         )
         for d in doodles
@@ -476,6 +493,8 @@ async def get_doodle(doodle_id: str):
         position_x=doodle['position_x'],
         position_y=doodle['position_y'],
         rotation=doodle['rotation'],
+        votes_up=doodle.get('votes_up', 0),
+        votes_down=doodle.get('votes_down', 0),
         created_at=doodle['created_at'] if isinstance(doodle['created_at'], str) else doodle['created_at'].isoformat()
     )
 
@@ -498,6 +517,26 @@ async def delete_multiple_doodles(request: DeleteDoodlesRequest, admin: dict = D
     result = await db.doodles.delete_many({"id": {"$in": request.doodle_ids}})
     
     return {"message": f"Deleted {result.deleted_count} doodles"}
+
+
+@api_router.post("/doodles/{doodle_id}/vote")
+async def vote_doodle(doodle_id: str, input: VoteRequest):
+    field = "votes_up" if input.vote == "up" else "votes_down"
+    
+    result = await db.doodles.find_one_and_update(
+        {"id": doodle_id},
+        {"$inc": {field: 1}},
+        return_document=True,
+        projection={"_id": 0, "votes_up": 1, "votes_down": 1}
+    )
+    
+    if not result:
+        raise HTTPException(status_code=404, detail="Doodle not found")
+    
+    return {
+        "votes_up": result.get("votes_up", 0),
+        "votes_down": result.get("votes_down", 0)
+    }
 
 
 @api_router.delete("/admin/doodles/all")

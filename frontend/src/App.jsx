@@ -109,6 +109,17 @@ function App() {
     }
   };
 
+  // Handle vote update
+  const handleVote = (doodleId, votes_up, votes_down) => {
+    setDoodles(prev => prev.map(d =>
+      d.id === doodleId ? { ...d, votes_up, votes_down } : d
+    ));
+    // Also sync selectedDoodle so the modal reflects current counts
+    setSelectedDoodle(prev =>
+      prev && prev.id === doodleId ? { ...prev, votes_up, votes_down } : prev
+    );
+  };
+
   // Calculate wall dimensions based on doodles
   const getWallDimensions = () => {
     if (doodles.length === 0) {
@@ -264,6 +275,7 @@ function App() {
           <EnlargedDoodle
             doodle={selectedDoodle}
             onClose={() => setSelectedDoodle(null)}
+            onVote={handleVote}
           />
         )}
       </AnimatePresence>
